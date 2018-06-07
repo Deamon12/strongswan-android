@@ -1,0 +1,39 @@
+ 
+
+## Apt-gets *see HACKING.txt) ##
+gettext, gettext-dev
+yacc
+bison
+flex
+gperf
+lcov
+ 
+## Git ##
+git clone
+
+## Conf ##
+./autogen.sh
+
+## Toolchain ##
+./make_standalone_toolchain.py --arch arm64 --api 21 --install-dir /tmp/toolchain-arm64-21
+
+## Configure ##
+export PATH=$PWD/toolchain-arm64-21/bin:$PATH
+./configure --host=aarch64-linux-android --prefix=$PWD/output/strongswan-arm64-21 --disable-gmp CFLAGS="-D__ANDROID_API__=21 -fPIE -fPIC" LDFLAGS="-pie"
+
+## Make ##
+make
+make install
+
+
+//// Code changes ////
+## Config.h ##
+#undef HAVE_CONDATTR_CLOCK_MONOTONIC
+#undef HAVE_GLOB_H
+
+## toolchain-arm64-21/sysroot/usr/include/linux/in.h ##
+struct sockaddr_storage *name; -> struct sockaddr_storage;
+
+## toolchain-arm64-21/sysroot/usr/include/netinet/udp.h ##
+comment out the struct
+
